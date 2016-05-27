@@ -5,11 +5,7 @@ class Cart < ActiveRecord::Base
   has_one :order
 
   def total
-    total = 0
-    self.line_items.each do |i|
-      total += (i.item.price * i.quantity)
-    end
-    return total
+    items.map {|item| item.price * item.line_items.map {|li| li.quantity}.inject(:+)}.inject(:+)
   end
 
   def add_item(item_id)
@@ -23,8 +19,17 @@ class Cart < ActiveRecord::Base
   end
 
   def checkout
-    self.update(status: "submitted")
-    items.each {|item| item.update(inventory: item.inventory -= item.line_items.map {|li| li.quantity}.inject(:+))}
+    self.status = "submitted"
+    change_inventory
+  end
+
+  def change_inventory
+    if self.status = "submitted"
+    self.line_items.each do |line_item| 
+        line_item.item.inventory -= line_item.quantity
+        line_item.item.save
+      end
+    end
   end
 
 end

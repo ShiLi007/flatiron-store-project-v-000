@@ -4,6 +4,6 @@ class Item < ActiveRecord::Base
   has_many :carts, through: :line_items
 
   def self.available_items
-    where("inventory > 0")
+    all.map {|item| item.inventory > 0 ? item : nil}.compact
   end
 end
