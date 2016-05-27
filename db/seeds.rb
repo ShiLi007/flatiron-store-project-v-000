@@ -13,3 +13,9 @@ Item.all.each do |item|
   item.save
   counter += 1
 end
+
+user = User.new
+user.email = 'test@example.com'
+user.password = 'valid_password'
+user.password_confirmation = 'valid_password'
+user.save!
