@@ -1,17 +1,19 @@
 class LineItemsController < ApplicationController
 
+  def new
+  end
+
   def create
-    if !current_cart
-      @user = current_user
-      @user.current_cart = Cart.create(user_id: @user.id)
-      line_item = @user.current_cart.add_item(params[:item_id])
-      line_item.save
-    else
-      @user = current_user
-      line_item = @user.current_cart.add_item(params[:item_id])
-      line_item.save
+    initialize_cart
+    item = Item.find(params[:item_id])
+    @line_item = current_cart.add_item(item.id)
+    
+    if @line_item.save
+      redirect_to cart_path(current_cart), alert: "Added Item to Cart!"
+    else 
+      redirect_to store_path, alert: "Error Adding Item."
     end
-    redirect_to cart_path(current_cart)
   end
 
 end
+
